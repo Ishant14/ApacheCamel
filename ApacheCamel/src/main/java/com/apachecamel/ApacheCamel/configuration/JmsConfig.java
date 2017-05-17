@@ -1,0 +1,34 @@
+package com.apachecamel.ApacheCamel.configuration;
+
+import org.apache.camel.component.jms.JmsComponent;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.connection.JmsTransactionManager;
+
+import javax.jms.ConnectionFactory;
+
+/**
+ * Created by igaurav on 5/17/2017.
+ */
+@Configuration
+public class JmsConfig {
+
+    @Bean
+    public JmsTransactionManager jmsTransactionManager(final ConnectionFactory connectionFactory){
+        JmsTransactionManager jmsTransactionManager= new JmsTransactionManager();
+        jmsTransactionManager.setConnectionFactory(connectionFactory);
+        return jmsTransactionManager;
+    }
+
+    @Bean
+    public JmsComponent jmsComponent(final ConnectionFactory connectionFactory,
+                                     final JmsTransactionManager jmsTransactionManager,
+                                     @Value("${maxConcurrent.consumer}")final int maxConcurrentConsumer){
+        JmsComponent jmsComponent = JmsComponent.jmsComponentTransacted(connectionFactory,jmsTransactionManager);
+        jmsComponent.setMaxConcurrentConsumers(maxConcurrentConsumer);
+        return jmsComponent;
+
+    }
+
+}
